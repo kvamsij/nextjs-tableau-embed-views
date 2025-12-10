@@ -4,7 +4,7 @@ export interface TableauUrlConfig {
 }
 
 export interface ITableauUrlService {
-    buildViewUrl(viewId: string, contentUrl?: string): string;
+    buildViewUrl(viewId: string, contentUrl?: string, params?:{[key:string]: string}): string;
 }
 
 export class TableauUrlService implements ITableauUrlService {
@@ -17,7 +17,19 @@ export class TableauUrlService implements ITableauUrlService {
         // Clean and format the view path
         const cleanViewPath = this.sanitizeViewPath(viewPath);
         
-        return `${this.config.baseUrl}/t/${this.config.siteId}/views/${cleanViewPath}`;
+        // Build the base URL
+        const baseUrl = `${this.config.baseUrl}/t/${this.config.siteId}/views/${cleanViewPath}`;
+        
+        // If params are provided, construct search params
+        // if (params) {
+        //     const url = new URL(baseUrl);
+        //     Object.entries(params).forEach(([key, value]) => {
+        //         url.searchParams.set(key, value);
+        //     });
+        //     return url.toString();
+        // }
+        
+        return baseUrl;
     }
 
     private sanitizeViewPath(path: string): string {

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-export default function TableauEmbedClient({ url, token }: { url: string;  token: string}) {
+export default function TableauEmbedClient({ url, token, params }: { url: string;  token: string, params: {[key:string]: string}}) {
     const isInitialized = useRef(false);
 
     useEffect(() => {
@@ -16,6 +16,21 @@ export default function TableauEmbedClient({ url, token }: { url: string;  token
                 const { TableauViz } = await import('@tableau/embedding-api');
                 
                 const viz = new TableauViz();
+
+
+                // Add viz parameters
+                Object.entries(params).forEach(([name, value]) => {
+                    const vizParameter = document.createElement("viz-parameter");
+                    const vizFilters = document.createElement("viz-filter");
+                    vizParameter.setAttribute("name", name);
+                    vizParameter.setAttribute("value", value);
+                    vizFilters.setAttribute("field", name);
+                    vizFilters.setAttribute("value", value);
+                    viz.appendChild(vizParameter);
+                    viz.appendChild(vizFilters);
+                });
+
+                
                 viz.src = url;
                 viz.token = token;
                 viz.width = '100%';
@@ -71,6 +86,7 @@ export default function TableauEmbedClient({ url, token }: { url: string;  token
                     }, 100);
                 }
                 
+                
             } catch (error) {
                 console.error('Failed to initialize Tableau viz:', error);
                 
@@ -96,7 +112,7 @@ export default function TableauEmbedClient({ url, token }: { url: string;  token
         return () => {
             isInitialized.current = false;
         };
-    }, [url, token]);
+    }, [url, token, params]);
 
     return null;
 }

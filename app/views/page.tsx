@@ -33,6 +33,7 @@ export default async function Views() {
         // Fetch views with images using the repository
         const processedViews = await viewsRepository.getAllViewsWithImages(session);
         const config = TableauConfigFactory.createDefaultConfig();
+        console.log({processedViews});
 
         return (
             <div className="container mx-auto p-6">

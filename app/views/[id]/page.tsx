@@ -5,13 +5,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { JWTAuthenticationService } from '@/lib/services/authentication-service';
-import { TableauUrlService } from '@/lib/services/tableau-url-service';
-import { ViewDetailService } from '@/lib/services/view-detail-service';
+import { ViewDetailOrchestrator } from '@/lib/orchestrators/view-detail-orchestrator';
+import { ViewDetailDataService } from '@/lib/services/view-detail-data-service';
+import { TableauDataRepository } from '@/lib/repositories/tableau-data-repository';
+import { TableauService } from '@/lib/services/tableau-service';
 import { TableauConfigFactory } from '@/lib/config/tableau-config';
 
 interface PageProps {
-    params: { 
+    params: {
         id: string;
     };
     searchParams: {
@@ -19,34 +20,43 @@ interface PageProps {
     };
 }
 
-// Factory function for dependency injection
-function createViewDetailService() {
-    const config = TableauConfigFactory.createDefaultConfig();
-    const authService = new JWTAuthenticationService();
-    const urlService = new TableauUrlService({
-        baseUrl: config.baseUrl,
-        siteId: process.env.SITE_ID || 'sandbox-nutritionintegrated' // This should come from config/env
-    });
-    
-    return new ViewDetailService(authService, urlService);
+// Dependency injection container - Single Responsibility for service creation
+class ViewDetailContainer {
+    private static instance: ViewDetailContainer;
+    private orchestrator: ViewDetailOrchestrator;
+
+    private constructor() {
+        const config = TableauConfigFactory.createDefaultConfig();
+        const tableauService = new TableauService(config);
+        const dataRepository = new TableauDataRepository(tableauService);
+        const dataService = new ViewDetailDataService(dataRepository);
+        this.orchestrator = new ViewDetailOrchestrator(dataService);
+    }
+
+    static getInstance(): ViewDetailContainer {
+        if (!ViewDetailContainer.instance) {
+            ViewDetailContainer.instance = new ViewDetailContainer();
+        }
+        return ViewDetailContainer.instance;
+    }
+
+    getOrchestrator(): ViewDetailOrchestrator {
+        return this.orchestrator;
+    }
 }
 
-// Main component with single responsibility - orchestrating the view detail page
+// Main component - Single Responsibility: UI orchestration only
 export default async function ViewDetailPage({ params, searchParams }: PageProps) {
-    
     const { id } = await params;
     const { contentUrl } = await searchParams;
 
     try {
-        // Get session data
         const session = await getSession();
-        
-        // Create service using dependency injection
-        const viewDetailService = createViewDetailService();
-        
-        // Prepare view details
-        const result = viewDetailService.prepareViewDetail(id, session, contentUrl);
-        
+        const orchestrator = ViewDetailContainer.getInstance().getOrchestrator();
+
+        // Use orchestrator for business logic - Dependency Inversion
+        const result = await orchestrator.executeViewDetailFlow(id, contentUrl, session);
+
         if (!result.success) {
             throw new Error(result.error);
         }
@@ -54,9 +64,10 @@ export default async function ViewDetailPage({ params, searchParams }: PageProps
         return (
             <div className="container mx-auto p-6">
                 <ViewDetailHeader />
-                <ViewDetailContent 
+                <ViewDetailContent
                     url={result.data!.embeddingUrl}
                     token={result.data!.token}
+                    params={result.data!.params}
                 />
             </div>
         );
@@ -86,14 +97,16 @@ function ViewDetailHeader() {
 interface ViewDetailContentProps {
     url: string;
     token: string;
+    params: {[key:string]: string};
 }
 
-function ViewDetailContent({ url, token }: ViewDetailContentProps) {
+function ViewDetailContent({ url, token, params }: ViewDetailContentProps) {
     return (
         <Suspense fallback={<LoadingFallback />}>
             <EmbedView 
                 url={url}
                 token={token}
+                params={params}
             />
         </Suspense>
     );
