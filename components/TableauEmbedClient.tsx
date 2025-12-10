@@ -17,17 +17,17 @@ export default function TableauEmbedClient({ url, token, params }: { url: string
                 
                 const viz = new TableauViz();
 
-
+                // selected price_group_ids
                 // Add viz parameters
                 Object.entries(params).forEach(([name, value]) => {
                     const vizParameter = document.createElement("viz-parameter");
-                    const vizFilters = document.createElement("viz-filter");
+                    // const vizFilters = document.createElement("viz-filter");
                     vizParameter.setAttribute("name", name);
                     vizParameter.setAttribute("value", value);
-                    vizFilters.setAttribute("field", name);
-                    vizFilters.setAttribute("value", value);
+                    // vizFilters.setAttribute("field", name);
+                    // vizFilters.setAttribute("value", value);
                     viz.appendChild(vizParameter);
-                    viz.appendChild(vizFilters);
+                    // viz.appendChild(vizFilters);
                 });
 
                 

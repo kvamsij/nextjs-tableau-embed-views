@@ -39,13 +39,13 @@ export class ViewDetailOrchestrator implements IViewDetailOrchestrator {
             }
 
             // Handle VizQL data
-            let ingredients = '';
+            let price_group_ids = '';
             if (vizqlResult.status === 'fulfilled' && vizqlResult.value.success && vizqlResult.value.data) {
-                ingredients = String(vizqlResult.value.data[0]?.Ingredients || '');
+                price_group_ids = String(vizqlResult.value.data.map(row => row['Ingredient']).join(','));
             }
 
             // Combine results
-            const params = { 'ingredients': ingredients };
+            const params = { price_group_ids };
 
             return {
                 success: true,

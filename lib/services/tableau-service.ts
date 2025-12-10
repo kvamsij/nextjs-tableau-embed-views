@@ -30,7 +30,7 @@ export interface VizQLQuery {
     filters?: Array<{
         field: { fieldCaption: string; function?: string };
         filterType: string;
-        values?: string[];
+        values?: string[] | number[] | boolean[];
         exclude?: boolean;
         quantitativeFilterType?: string;
         min?: number;

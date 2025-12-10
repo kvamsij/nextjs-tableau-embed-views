@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import CryptoJS from 'crypto-js';
+import { TableauUserGroupService } from '@/lib/services/tableau-user-group-service';
 
 
 
@@ -24,16 +25,19 @@ async function generateJwt ({ email }: {email: string}) {
     // const jwtClientId = "ef4ef302-341b-4565-b512-6cff188f2011";
     
     // Extract domain from email
-    // const emailDomain = email.split('@')[1].split('.')[0];
-    const emailDomain = email.split('@')[1];
+    const emailDomain = email.split('@')[1].split('.')[0];
+    // const emailDomain = email.split('@')[1];
     
     // // Try to get domain override from database
-    // const domainOverride = await TableauUserGroupService.getDomainOverride(emailDomain);
+    const domainOverride = await TableauUserGroupService.getDomainOverride(emailDomain);
+
+
+    console.log(domainOverride);
     
     // // Validate that domain exists in database
-    // if (!domainOverride) {
-    //     throw new Error(`No domain override found for email domain: ${emailDomain}. Please ensure the domain is configured in the database.`);
-    // }
+    if (!domainOverride) {
+        throw new Error(`No domain override found for email domain: ${emailDomain}. Please ensure the domain is configured in the database.`);
+    }
     
     const jwtSecret = process.env.TABLEAU_SECRET_KEY || '';
     const jwtSecretId = process.env.TABLEAU_SECRET_ID || '';
@@ -56,7 +60,7 @@ async function generateJwt ({ email }: {email: string}) {
         'iss': jwtClientId,
         'sub': email,
         'email': email,
-        'company': emailDomain,
+        'priceGroupIds': domainOverride.join(','),
         'aud': 'tableau',
         'exp': currentTimestamp + 600, // Token valid for 10 minutes
         'iat': currentTimestamp,

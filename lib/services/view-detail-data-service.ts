@@ -74,31 +74,33 @@ export class ViewDetailDataService implements IViewDetailDataService {
     async getVizQLData(session: ISession): Promise<DataServiceResult<VizQLDataRow[]>> {
         try {
             // Decode JWT to get company
-            const decodedToken = jwtDecode<JwtPayload & { company: string }>(session.jwt);
-            const company = decodedToken.company;
+            const decodedToken = jwtDecode<JwtPayload & { priceGroupIds: string }>(session.jwt);
+            const price_group_ids = decodedToken.priceGroupIds.split(',').map(id => parseInt(id.trim(), 10));
 
             // This could be made configurable in the future
-            const datasourceId = "8a89f389-5e65-4605-a8be-f7b331a97332";
+            // const datasourceId = "8a89f389-5e65-4605-a8be-f7b331a97332";
+            const datasourceId = "54a458d5-3844-46ff-98a6-70a2f20a193f";
 
             const result = await this.dataRepository.queryDataWithVizQL(
                 datasourceId,
                 {
                     fields: [{
-                        fieldCaption: 'Ingredients',
+                        fieldCaption: 'Ingredient',
                         sortPriority: 1,
                         sortDirection: 'ASC'
                     }],
                     filters: [
                         {
-                            field: { fieldCaption: 'company' },
+                            field: { fieldCaption: 'Price Group Id' },
                             filterType: 'SET',
-                            values: [company],
+                            values: price_group_ids,
                             exclude: false
                         }
                     ],
                 },
                 session
             );
+
 
             if (result.error) {
                 return {
