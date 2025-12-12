@@ -9,6 +9,6 @@ import { TableauUserGroupService } from '@/lib/services/tableau-user-group-servi
  */
 export async function getDomainOverride(domain: string) {
   const data =  await TableauUserGroupService.getDomainOverride(domain);
-  console.log({data});
+  // console.log({data});
   return data;
 }

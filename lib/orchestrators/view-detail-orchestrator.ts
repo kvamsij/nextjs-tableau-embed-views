@@ -39,13 +39,14 @@ export class ViewDetailOrchestrator implements IViewDetailOrchestrator {
             }
 
             // Handle VizQL data
-            let price_group_ids = '';
+            let price_group_names = '';
             if (vizqlResult.status === 'fulfilled' && vizqlResult.value.success && vizqlResult.value.data) {
-                price_group_ids = String(vizqlResult.value.data.map(row => row['Ingredient']).join(','));
+                // price_group_ids = String(vizqlResult.value.data.map(row => row['Ingredient']).join(','));
+                price_group_names = String(vizqlResult.value.data);
             }
 
             // Combine results
-            const params = { price_group_ids };
+            const params = { ['Price Group Name']:  price_group_names.split(',')[0] };
 
             return {
                 success: true,

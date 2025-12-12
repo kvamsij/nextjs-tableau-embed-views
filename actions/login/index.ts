@@ -48,7 +48,7 @@ export async function login (prevState: { error: string } | null, formdata: Form
     return { error: 'Authentication failed. Please check your credentials.' };
   }
   const data = await response.text();
-  console.log({data});
+  // console.log({data});
   if(!data){
     return { error: 'No authentication data received from server.' };
   }

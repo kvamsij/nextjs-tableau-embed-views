@@ -12,7 +12,7 @@ export interface ViewDetailData {
     params: { [key: string]: string };
 }
 
-export interface DataServiceResult<T = ViewDetailData> {
+export interface DataServiceResult<T = ViewDetailData | string[]> {
     success: boolean;
     data?: T;
     error?: string;
@@ -24,7 +24,7 @@ export interface VizQLDataRow {
 
 export interface IViewDetailDataService {
     getViewDetails(viewId: string, contentUrl: string | undefined, session: ISession): Promise<DataServiceResult<ViewDetailData>>;
-    getVizQLData(session: ISession): Promise<DataServiceResult<VizQLDataRow[]>>;
+    getVizQLData(session: ISession): Promise<DataServiceResult<VizQLDataRow[] | string[]>>;
 }
 
 export class ViewDetailDataService implements IViewDetailDataService {
@@ -71,7 +71,7 @@ export class ViewDetailDataService implements IViewDetailDataService {
         }
     }
 
-    async getVizQLData(session: ISession): Promise<DataServiceResult<VizQLDataRow[]>> {
+    async getVizQLData(session: ISession): Promise<DataServiceResult<string[]>> {
         try {
             // Decode JWT to get company
             const decodedToken = jwtDecode<JwtPayload & { priceGroupIds: string }>(session.jwt);
@@ -85,7 +85,7 @@ export class ViewDetailDataService implements IViewDetailDataService {
                 datasourceId,
                 {
                     fields: [{
-                        fieldCaption: 'Ingredient',
+                        fieldCaption: 'Price Group Name',
                         sortPriority: 1,
                         sortDirection: 'ASC'
                     }],
@@ -101,7 +101,7 @@ export class ViewDetailDataService implements IViewDetailDataService {
                 session
             );
 
-
+            console.log(result.data?.map(row => row['Price Group Name']));
             if (result.error) {
                 return {
                     success: false,
@@ -111,7 +111,8 @@ export class ViewDetailDataService implements IViewDetailDataService {
 
             return {
                 success: true,
-                data: result.data
+                data: result.data?.map(row => row['Price Group Name']) as string[]
+                // data: price_group_ids.length > 0 ? price_group_ids : []
             };
         } catch (error) {
             return {
