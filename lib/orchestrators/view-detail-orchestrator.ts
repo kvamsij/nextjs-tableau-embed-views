@@ -43,10 +43,11 @@ export class ViewDetailOrchestrator implements IViewDetailOrchestrator {
             if (vizqlResult.status === 'fulfilled' && vizqlResult.value.success && vizqlResult.value.data) {
                 // price_group_ids = String(vizqlResult.value.data.map(row => row['Ingredient']).join(','));
                 price_group_names = String(vizqlResult.value.data);
+                // price_group_names = String(vizqlResult.value.data);
             }
 
             // Combine results
-            const params = { ['Price Group Name']:  price_group_names.split(',')[0] };
+            const params = { ['price_group_parameter']:  price_group_names.split(',').join('|') };
 
             return {
                 success: true,

@@ -12,7 +12,7 @@ export interface ViewDetailData {
     params: { [key: string]: string };
 }
 
-export interface DataServiceResult<T = ViewDetailData | string[]> {
+export interface DataServiceResult<T = ViewDetailData | string[] | number[]> {
     success: boolean;
     data?: T;
     error?: string;
@@ -24,7 +24,7 @@ export interface VizQLDataRow {
 
 export interface IViewDetailDataService {
     getViewDetails(viewId: string, contentUrl: string | undefined, session: ISession): Promise<DataServiceResult<ViewDetailData>>;
-    getVizQLData(session: ISession): Promise<DataServiceResult<VizQLDataRow[] | string[]>>;
+    getVizQLData(session: ISession): Promise<DataServiceResult<VizQLDataRow[] | string[] | number[]>>;
 }
 
 export class ViewDetailDataService implements IViewDetailDataService {
@@ -71,7 +71,7 @@ export class ViewDetailDataService implements IViewDetailDataService {
         }
     }
 
-    async getVizQLData(session: ISession): Promise<DataServiceResult<string[]>> {
+    async getVizQLData(session: ISession): Promise<DataServiceResult<number[]>> {
         try {
             // Decode JWT to get company
             const decodedToken = jwtDecode<JwtPayload & { priceGroupIds: string }>(session.jwt);
@@ -111,8 +111,8 @@ export class ViewDetailDataService implements IViewDetailDataService {
 
             return {
                 success: true,
-                data: result.data?.map(row => row['Price Group Name']) as string[]
-                // data: price_group_ids.length > 0 ? price_group_ids : []
+                // data: result.data?.map(row => row['Price Group Name']) as string[]
+                data: price_group_ids.length > 0 ? price_group_ids : []
             };
         } catch (error) {
             return {

@@ -20,15 +20,15 @@ export default function TableauEmbedClient({ url, token, params }: { url: string
                 // selected price_group_ids
                 // Add viz parameters
                 Object.entries(params).forEach(([name, value]) => {
-                    // const vizParameter = document.createElement("viz-parameter");
-                    const vizFilters = document.createElement("viz-filter");
-                    // vizParameter.setAttribute("name", name);
-                    // vizParameter.setAttribute("value", value);
-                    vizFilters.setAttribute("field", name);
+                    const customParameter = document.createElement("custom-parameter");
+                    // const vizFilters = document.createElement("viz-filter");
+                    customParameter.setAttribute("name", name);
+                    customParameter.setAttribute("value", value);
+                    // vizFilters.setAttribute("field", name);
                     // vizFilters.setAttribute("operator", 'IN');
-                    vizFilters.setAttribute("value", value);
-                    // viz.appendChild(vizParameter);
-                    viz.appendChild(vizFilters);
+                    // vizFilters.setAttribute("value", value);
+                    viz.appendChild(customParameter);
+                    // viz.appendChild(vizFilters);
                 });
 
                 
@@ -72,6 +72,9 @@ export default function TableauEmbedClient({ url, token, params }: { url: string
                     element.innerHTML = '';
                     element.appendChild(viz);
                     console.log('Successfully appended Tableau viz to element');
+                    // const parameters = await viz.workbook.getParametersAsync();
+                    // const baseSalary = parameters.find( (p) => p.name == "price_group_parameter");
+                    // newVal = await baseSalary.changeValueAsync();
                 } else {
                     console.error('tableauViz element not found in DOM');
                     // Try again after a small delay
@@ -108,6 +111,7 @@ export default function TableauEmbedClient({ url, token, params }: { url: string
         };
 
         initializeTableau();
+        // await viz.workbook.changeParameterValueAsync("Base Salary", newBase)
         
         // Cleanup function
         return () => {
