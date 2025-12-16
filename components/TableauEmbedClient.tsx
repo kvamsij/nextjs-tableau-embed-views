@@ -138,7 +138,7 @@ export default function TableauEmbedClient({ url, token, customAttributes }: { u
         return () => {
             isInitialized.current = false;
         };
-    }, [url, token]);
+    }, [url, token, customAttributes]);
 
     return null;
 }
