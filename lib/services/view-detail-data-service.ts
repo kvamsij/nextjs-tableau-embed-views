@@ -12,7 +12,7 @@ export interface ViewDetailData {
     params: { [key: string]: string };
 }
 
-export interface DataServiceResult<T = ViewDetailData | string[] | number[]> {
+export interface DataServiceResult<T = ViewDetailData | { price_group_ids: number[]; price_group_name: string }> {
     success: boolean;
     data?: T;
     error?: string;
@@ -24,7 +24,7 @@ export interface VizQLDataRow {
 
 export interface IViewDetailDataService {
     getViewDetails(viewId: string, contentUrl: string | undefined, session: ISession): Promise<DataServiceResult<ViewDetailData>>;
-    getVizQLData(session: ISession): Promise<DataServiceResult<VizQLDataRow[] | string[] | number[]>>;
+    getVizQLData(session: ISession): Promise<DataServiceResult<VizQLDataRow[] | { price_group_ids: number[]; price_group_name: string }>>;
 }
 
 export class ViewDetailDataService implements IViewDetailDataService {
@@ -71,7 +71,7 @@ export class ViewDetailDataService implements IViewDetailDataService {
         }
     }
 
-    async getVizQLData(session: ISession): Promise<DataServiceResult<number[]>> {
+    async getVizQLData(session: ISession): Promise<DataServiceResult<{ price_group_ids: number[]; price_group_name: string }>> {
         try {
             // Decode JWT to get company
             const decodedToken = jwtDecode<JwtPayload & { priceGroupIds: string }>(session.jwt);
@@ -102,17 +102,22 @@ export class ViewDetailDataService implements IViewDetailDataService {
             );
 
             console.log(result.data?.map(row => row['Price Group Name']));
+            const price_group_names = result.data?.map(row => row['Price Group Name']) as string[] || [];
             if (result.error) {
                 return {
                     success: false,
                     error: result.error
                 };
             }
-
+            // Price Group Name 
+            // look into ingredient tracker
             return {
                 success: true,
                 // data: result.data?.map(row => row['Price Group Name']) as string[]
-                data: price_group_ids.length > 0 ? price_group_ids : []
+                data: {
+                    price_group_ids : price_group_ids.length > 0 ? price_group_ids : [],
+                    price_group_name: price_group_names[0]
+                }
             };
         } catch (error) {
             return {

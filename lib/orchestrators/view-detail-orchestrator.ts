@@ -39,15 +39,25 @@ export class ViewDetailOrchestrator implements IViewDetailOrchestrator {
             }
 
             // Handle VizQL data
-            let price_group_names = '';
+            let price_group_ids = '';
+            let price_group_name = '';
             if (vizqlResult.status === 'fulfilled' && vizqlResult.value.success && vizqlResult.value.data) {
                 // price_group_ids = String(vizqlResult.value.data.map(row => row['Ingredient']).join(','));
-                price_group_names = String(vizqlResult.value.data);
-                // price_group_names = String(vizqlResult.value.data);
+                const resultData = vizqlResult.value.data as { price_group_ids: number[]; price_group_name: string };
+                price_group_ids = String(resultData.price_group_ids);
+                price_group_name = resultData.price_group_name;
+                // Price Group Name
+                // const
+                // price_group_ids = String(vizqlResult.value.data);
             }
 
             // Combine results
-            const params = { ['price_group_parameter']:  price_group_names.split(',').join('|') };
+            const params = {
+                     ['price_group_parameter']:  price_group_ids.split(',').join('|'), 
+                     ['Price Group Name']: price_group_name
+
+             };
+             console.log({params});
 
             return {
                 success: true,
