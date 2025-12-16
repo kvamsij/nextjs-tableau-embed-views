@@ -61,7 +61,7 @@ export default async function ViewDetailPage({ params, searchParams }: PageProps
         const domain = getRootDomainFromEmail(email);
          
         const customAttributes = await TableauUserGroupService.getDomainOverride(domain);
-        
+        console.log({customAttributes});
 
 
         return (

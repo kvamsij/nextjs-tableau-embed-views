@@ -25,15 +25,15 @@ async function generateJwt ({ email }: {email: string}) {
     // const jwtClientId = "ef4ef302-341b-4565-b512-6cff188f2011";
     
     // Extract domain from email
-    const emailDomain = email.split('@')[1].split('.')[0];
+    // const emailDomain = email.split('@')[1].split('.')[0];
     
     // Try to get domain override from database
-    const domainOverride = await TableauUserGroupService.getDomainOverride(emailDomain);
+    // const domainOverride = await TableauUserGroupService.getDomainOverride(emailDomain);
     
-    // Validate that domain exists in database
-    if (!domainOverride) {
-        throw new Error(`No domain override found for email domain: ${emailDomain}. Please ensure the domain is configured in the database.`);
-    }
+    // // Validate that domain exists in database
+    // if (!domainOverride) {
+    //     throw new Error(`No domain override found for email domain: ${emailDomain}. Please ensure the domain is configured in the database.`);
+    // }
     
     const jwtSecret = process.env.TABLEAU_SECRET_KEY || '';
     const jwtSecretId = process.env.TABLEAU_SECRET_ID || '';
@@ -55,8 +55,6 @@ async function generateJwt ({ email }: {email: string}) {
     const payload = {
         'iss': jwtClientId,
         'sub': email,
-        'email': email,
-        'company': domainOverride,
         'aud': 'tableau',
         'exp': currentTimestamp + 600, // Token valid for 10 minutes
         'iat': currentTimestamp,
