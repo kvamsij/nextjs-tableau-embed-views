@@ -7,11 +7,21 @@ import { useEffect } from 'react';
 interface EmbedViewProps {
     url: string;
     token: string;
+    customAttributes: {
+        filters: {
+        price_group_name: string;
+    };
+    customParams: {
+        price_group_ids: string;
+        currency: string;
+        tableau_user_group_name: string;
+        };
+    }
 }
 
 const TableauEmbedClientComponent = dynamic(() => import('@/components/TableauEmbedClient'), { ssr: false });
 
-export default function EmbedView({ url, token }: EmbedViewProps) {
+export default function EmbedView({ url, token, customAttributes }: EmbedViewProps) {
     useEffect(() => {
         // Verify the element exists when component mounts
         const element = document.getElementById('tableauViz');
@@ -36,6 +46,7 @@ export default function EmbedView({ url, token }: EmbedViewProps) {
             <TableauEmbedClientComponent
                 url={url}
                 token={token}
+                customAttributes={customAttributes}
             />
         </>
     );

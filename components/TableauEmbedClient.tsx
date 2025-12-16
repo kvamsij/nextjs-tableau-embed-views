@@ -2,7 +2,18 @@
 
 import { useEffect, useRef } from 'react';
 
-export default function TableauEmbedClient({ url, token }: { url: string;  token: string}) {
+type customVizAttributes = {
+    filters: {
+        price_group_name: string;
+    };
+    customParams: {
+        price_group_ids: string;
+        currency: string;
+        tableau_user_group_name: string;
+    };
+}
+
+export default function TableauEmbedClient({ url, token, customAttributes }: { url: string;  token: string, customAttributes: customVizAttributes }) {
     const isInitialized = useRef(false);
 
     useEffect(() => {
@@ -16,6 +27,37 @@ export default function TableauEmbedClient({ url, token }: { url: string;  token
                 const { TableauViz } = await import('@tableau/embedding-api');
                 
                 const viz = new TableauViz();
+
+                 const { filters, customParams } = customAttributes;
+
+                    if(filters.price_group_name){
+                        const vizFilters = document.createElement("viz-filter");
+                        vizFilters.setAttribute("field", "Price Group Name");
+                        vizFilters.setAttribute("value", filters.price_group_name);
+                        viz.appendChild(vizFilters);
+                    }
+                    if(customParams.price_group_ids){
+                        const customParameter = document.createElement("custom-parameter");
+                        customParameter.setAttribute("name", "price_group_parameter");
+                        customParameter.setAttribute("value", customParams.price_group_ids);
+                        viz.appendChild(customParameter);
+                    }
+                    if(customParams.currency){
+                        const customParameterCurrency = document.createElement("custom-parameter");
+                        customParameterCurrency.setAttribute("name", "currency_parameter");
+                        customParameterCurrency.setAttribute("value", customParams.currency);
+                        viz.appendChild(customParameterCurrency);
+                    }
+                    if(customParams.tableau_user_group_name){
+                        const customParameterGroupName = document.createElement("custom-parameter");
+                        customParameterGroupName.setAttribute("name", "tableau_user_group_name_parameter");
+                        customParameterGroupName.setAttribute("value", customParams.tableau_user_group_name);
+                        viz.appendChild(customParameterGroupName);
+                    }
+
+
+
+
                 viz.src = url;
                 viz.token = token;
                 viz.width = '100%';

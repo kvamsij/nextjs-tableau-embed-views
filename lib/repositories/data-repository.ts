@@ -1,7 +1,11 @@
 import pool from '@/lib/config/database';
 
 export interface DataRow {
-  [key: string]: unknown;
+  // [key: string]: unknown;
+  price_group_name: string;
+  price_group_ids: number[];
+  currency: string;
+  tableau_user_group_name: string;
 }
 
 /**
