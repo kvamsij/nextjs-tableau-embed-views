@@ -25,7 +25,7 @@ export class TableauUserGroupRepository {
   static async getDomainOverride(domain: string): Promise<ResultsType | null> {
     const result = await fetchSingleRow(
       `SELECT price_group_name, price_group_ids, currency, tableau_user_group_name FROM ${TABLE_NAME} WHERE tableau_user_group_domain_override = $1`,
-      [domain]
+      [domain.toLowerCase()]
     );
         if(result){
             return {
