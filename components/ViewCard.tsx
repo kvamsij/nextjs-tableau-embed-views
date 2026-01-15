@@ -36,7 +36,10 @@ export default async function ViewCard({ view }: ViewCardProps) {
         });
     };
 
-    const viewPath = `/views/${view.id}?contentUrl=${encodeURIComponent(view.contentUrl.replace('/sheets/', '/'))}`;
+    let viewPath = `/views/${view.id}?contentUrl=${encodeURIComponent(view.contentUrl.replace('/sheets/', '/'))}`;
+    if(view.tags?.tag && view.tags.tag.length > 0){
+        viewPath += `&tag=${encodeURIComponent(view.tags.tag[0].label)}`;
+    }
 
     return (
         <Link href={viewPath}>
@@ -140,7 +143,8 @@ export default async function ViewCard({ view }: ViewCardProps) {
                             {/* Tag Count */}
                             {view.tags?.tag && view.tags.tag.length > 0 && (
                                 <Badge variant="outline" className="text-xs font-medium">
-                                    {view.tags.tag.length} tag{view.tags.tag.length !== 1 ? 's' : ''}
+                                    {/* {view.tags.tag.length} tag{view.tags.tag.length !== 1 ? 's' : ''} */}
+                                    {view.tags.tag[0].label}
                                 </Badge>
                             )}
                         </div>

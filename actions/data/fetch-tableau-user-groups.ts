@@ -7,8 +7,8 @@ import { TableauUserGroupService } from '@/lib/services/tableau-user-group-servi
  * Useful for extracting company from email
  * @param domain - Email domain (e.g., from user@sis.com)
  */
-export async function getDomainOverride(domain: string) {
-  const data =  await TableauUserGroupService.getDomainOverride(domain);
+export async function getDomainOverride(domain: string, tag: string) {
+  const data =  await TableauUserGroupService.getDomainOverride(domain, tag);
   console.log({data});
   return data;
 }

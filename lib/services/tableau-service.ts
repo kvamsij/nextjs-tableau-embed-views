@@ -47,6 +47,7 @@ export class TableauService {
         }
         
         const data = await response.json();
+        console.log(JSON.stringify(data.views.view[0], null, 2));
         return data?.views?.view || [];
     }
 

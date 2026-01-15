@@ -18,9 +18,9 @@ export class TableauUserGroupService {
    * Get domain override for a given domain
    * Useful for email domain extraction
    */
-  static async getDomainOverride(domain: string): Promise<ResultsType | null> {
+  static async getDomainOverride(domain: string, tag: string): Promise<ResultsType | null> {
     try {
-      return await TableauUserGroupRepository.getDomainOverride(domain);
+      return await TableauUserGroupRepository.getDomainOverride(domain, tag);
     } catch (error) {
       console.error('Error fetching domain override:', error);
       return null;

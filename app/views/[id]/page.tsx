@@ -18,6 +18,7 @@ interface PageProps {
     };
     searchParams: {
         contentUrl?: string;
+        tag: string;
     };
 }
 
@@ -38,6 +39,7 @@ export default async function ViewDetailPage({ params, searchParams }: PageProps
     
     const { id } = await params;
     const { contentUrl } = await searchParams;
+    const tag = (await searchParams).tag || '';
 
     try {
         // Get session data
@@ -59,8 +61,9 @@ export default async function ViewDetailPage({ params, searchParams }: PageProps
         }
 
         const domain = getRootDomainFromEmail(email);
+        // const tag = 'price';
          
-        const customAttributes = await TableauUserGroupService.getDomainOverride(domain);
+        const customAttributes = await TableauUserGroupService.getDomainOverride(domain, tag);
         console.log({customAttributes});
 
 
